@@ -1,0 +1,11 @@
+{
+  "routes": [
+    { "path": "/", "title": "Início — ShoppingLink" },
+    { "path": "/busca", "title": "Busca — ShoppingLink" },
+    { "path": "/loja/:id", "title": "Loja — ShoppingLink" },
+    { "path": "/produto/:id", "title": "Produto — ShoppingLink" },
+    { "path": "/carrinho", "title": "Carrinho — ShoppingLink" },
+    { "path": "/pedidos", "title": "Acompanhamento — ShoppingLink" },
+    { "path": "/painel", "title": "Painel do lojista — ShoppingLink" }
+  ]
+}
