@@ -1,4 +1,5 @@
 import './globals.css';
+import './interactive.css';
 
 export const metadata = {
   title: 'ShoppingLink · Capim Dourado Shopping',
