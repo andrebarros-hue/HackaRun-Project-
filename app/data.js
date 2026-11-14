@@ -181,4 +181,4 @@ export const INITIAL_PRODUCTS = [
   // ---------- ELETRÔNICOS ----------
   ...P('casa-do-celular', 'Eletrônicos', [['Capa de silicone para celular', 29.9, null, 'Capa de silicone. Informe o modelo na loja.'], ['Carregador turbo USB-C', 69.9, 89.9, 'Carregador de parede com saída USB-C.'], ['Fone de ouvido bluetooth', 129.9, 169.9, 'Fone sem fio com estojo de carga.']]),
   ...P('claro', 'Eletrônicos', [['Smartphone 128 GB', 1399, 1599, 'Smartphone com 128 GB de armazenamento.'], ['Fone de ouvido bluetooth', 149.9, null, 'Fone sem fio.'], ['Carregador portátil 10.000 mAh', 119.9, 149.9, 'Bateria externa para celular.']])
-];
+].filter((product) => Boolean(product.image));

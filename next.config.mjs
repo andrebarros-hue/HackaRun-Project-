@@ -1,14 +1,16 @@
-/** @type {import('next').NextConfig} */
-const isPages = process.env.GITHUB_ACTIONS === "true";
-const repo = "HackaRun-Project-";
+const isProd = process.env.NODE_ENV === 'production';
+const repository = 'HackaRun-Project-';
 
+/** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
-  poweredByHeader: false,
-  output: "export",
+  output: 'export',
   trailingSlash: true,
-  images: { unoptimized: true },
-  basePath: isPages ? `/${repo}` : ""
+  images: {
+    unoptimized: true,
+  },
+
+  basePath: isProd ? `/${repository}` : '',
+  assetPrefix: isProd ? `/${repository}/` : '',
 };
 
 export default nextConfig;
