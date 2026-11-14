@@ -26,3 +26,7 @@ Os dados iniciais funcionam em memória e ficam persistidos no `localStorage` do
 - `app/mall.js` — endereço, horários, serviços, fotos e créditos. Fotos do shopping em `public/shopping/`: vista aérea (CC BY-SA 4.0, Capim Dourado Shopping) e Cinemark (CC BY-SA 3.0, gugapalmas), ambas do Wikimedia Commons, além dos banners de divulgação Doce Natal e Imerso Mar do site oficial.
 - Fotos de produtos: 8 são do Unsplash e estão marcadas como "foto ilustrativa"; os demais produtos usam ilustrações marcadas como "ilustração". Substitua por fotos enviadas pelas lojas em `public/produtos/`.
 - Os créditos completos aparecem no site, em Rodapé → "Créditos das imagens".
+
+
+LINK DO VIDEO DO NOSSO PROJETO 
+https://youtube.com/shorts/DQrcrFdt3N8?is=DEeqyhtdlNRyJtLp
