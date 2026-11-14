@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { STORES, INITIAL_PRODUCTS, CATEGORIES, FEATURED_STORES, kindOf } from './data';
@@ -12,9 +13,14 @@ const DIRECTORY_GROUPS = ['Moda', 'Calçados', 'Acessórios', 'Beleza & cosméti
 const STORE_BY_DIR = Object.fromEntries(STORES.map((store) => [store.dirId, store]));
 const DIR_BY_ID = Object.fromEntries(DIRECTORY.map((entry) => [entry.id, entry]));
 const LIGHTBOX_ITEMS = [...GALLERY, ...EVENTS.map((event) => ({ ...event, src: event.wide || event.src, credit: event.credit, creditUrl: event.url }))];
-const POPULAR_SEARCHES = ['Tênis', 'Camiseta', 'Protetor solar', 'Fone bluetooth', 'Bolsa', 'Chinelo'];
+const POPULAR_SEARCHES = ['Colar', 'Pulseira', 'Anel', 'Protetor solar', 'Sérum', 'Camisa'];
 
+const BASE_PATH =
+  process.env.NODE_ENV === 'production'
+    ? '/HackaRun-Project-'
+    : '';
 const INITIAL_ORDERS = [
+
   { id: 'SL-2048', date: 'Hoje, 14:32', store: 'ACIUM', item: 'Colar ACIUM Essencial', total: 249.9, method: 'Pix', mode: 'Entrega em casa', step: 2, address: 'Quadra 204 Sul · Palmas/TO' }
 ];
 
@@ -483,8 +489,8 @@ function HomePage({ products, navigate, cardProps, searchProps, onOpenStore, onO
   </>;
 }
 
-function Footer({ navigate, onCredits }) {
-  return <footer className="footer"><div className="container footer-grid"><div><Logo onClick={() => navigate('/')} /><p>Projeto acadêmico · Palmas–TO</p></div><div><span className="footer-title">ShoppingLink</span><button onClick={() => navigate('/busca')}>Explorar produtos</button><button onClick={() => navigate('/favoritos')}>Meus favoritos</button><button onClick={() => navigate('/pedidos')}>Acompanhar pedido</button></div><div><span className="footer-title">Shopping</span><button onClick={() => navigate('/lojas')}>Diretório de lojas</button><button onClick={() => navigate('/lojas?grupo=Gastronomia')}>Gastronomia</button><a href={MALL.site} target="_blank" rel="noopener noreferrer">Site oficial <Icon name="external" size={11} /></a></div><div><span className="footer-title">Informações</span><button onClick={() => navigate('/painel')}>Painel do lojista</button><button onClick={onCredits}>Créditos das imagens</button><p>{MALL.phone} (shopping)</p></div></div><div className="container footer-bottom"><span>© 2026 ShoppingLink · Projeto acadêmico demonstrativo para Palmas/TO</span><span>Preços e estoques de demonstração · Lojas conforme o diretório oficial</span></div></footer>;
+function Footer({ navigate, onCredits, onCat }) {
+  return <footer className="footer"><div className="container footer-grid"><div><Logo onClick={() => navigate('/')} /><p>Projeto acadêmico · Palmas–TO</p></div><div><span className="footer-title">ShoppingLink</span><button onClick={() => navigate('/busca')}>Explorar produtos</button><button onClick={() => navigate('/favoritos')}>Meus favoritos</button><button onClick={() => navigate('/pedidos')}>Acompanhar pedido</button></div><div><span className="footer-title">Shopping</span><button onClick={() => navigate('/lojas')}>Diretório de lojas</button><button onClick={() => navigate('/lojas?grupo=Gastronomia')}>Gastronomia</button><a href={MALL.site} target="_blank" rel="noopener noreferrer">Site oficial <Icon name="external" size={11} /></a></div><div><span className="footer-title">Informações</span><button onClick={() => navigate('/painel')}>Painel do lojista</button><button onClick={onCredits}>Créditos das imagens</button><p>{MALL.phone} (shopping)</p></div></div><div className="container footer-bottom"><span>© 2026 ShoppingLink · Projeto acadêmico demonstrativo para Palmas/TO</span><span>Preços e estoques de demonstração · Lojas conforme o diretório oficial</span><button type="button" className="easter-cat" onClick={onCat} aria-label="Gato preto">🐈‍⬛</button></div></footer>;
 }
 
 function FilterPanel({ products, filters, setFilters, storesWithProducts, onClear, priceCeiling }) {
@@ -558,7 +564,36 @@ function StoresPage({ navigate, path, products, onOpenStore }) {
   return <main className="page-main"><div className="container">
     <div className="breadcrumb"><button onClick={() => navigate('/')}>Início</button><Icon name="chevron" size={14} /><span>{group === 'Gastronomia' ? 'Gastronomia' : 'Lojas'}</span></div>
     <div className="page-title-row"><div><span className="eyebrow">{MALL.name}</span><h1>{group === 'Gastronomia' ? 'Gastronomia' : 'Diretório de lojas'}</h1><p>{list.length} de {DIRECTORY.length} lojas e serviços, conforme o diretório oficial do shopping.</p></div><label className="store-search"><Icon name="search" size={16} /><input value={term} onChange={(event) => setTerm(event.target.value)} placeholder="Buscar loja ou categoria" aria-label="Buscar loja" />{term && <button onClick={() => setTerm('')} aria-label="Limpar"><Icon name="close" size={13} /></button>}</label></div>
-    <div className="chip-row group-chips" role="tablist" aria-label="Categorias de lojas">{['Todas', ...DIRECTORY_GROUPS].map((item) => <button key={item} role="tab" aria-selected={group === item} className={group === item ? 'chip selected' : 'chip'} onClick={() => { setGroup(item); window.history.replaceState({}, '', item === 'Todas' ? '/lojas' : `/lojas?grupo=${encodeURIComponent(item)}`); }}>{item !== 'Todas' && <Icon name={GROUP_ICON[item]} size={14} />}{item}<small>{item === 'Todas' ? DIRECTORY.length : DIRECTORY.filter((entry) => entry.group === item).length}</small></button>)}</div>
+  <div
+  className="chip-row group-chips"
+  role="tablist"
+  aria-label="Categorias de lojas"
+>
+  {['Todas', ...DIRECTORY_GROUPS].map((item) => (
+    <button
+      key={item}
+      role="tab"
+      aria-selected={group === item}
+      className={group === item ? 'chip selected' : 'chip'}
+      onClick={() => {
+        setGroup(item);
+
+        const next =
+          item === 'Todas'
+            ? '/lojas'
+            : `/lojas?grupo=${encodeURIComponent(item)}`;
+
+        window.history.replaceState(
+          {},
+          '',
+          `${BASE_PATH}${next}`
+        );
+      }}
+    >
+      {item}
+    </button>
+  ))}
+</div>
     <div className="directory-toolbar"><div className="segmented" role="radiogroup" aria-label="Localização">{floors.map((item) => <button key={item} role="radio" aria-checked={floor === item} className={floor === item ? 'active' : ''} onClick={() => setFloor(item)}>{item}</button>)}</div><label className="toggle"><input type="checkbox" checked={onlyShowcase} onChange={(event) => setOnlyShowcase(event.target.checked)} /><span className="toggle-track" /><span>Só com vitrine online</span></label></div>
     {loading ? <SkeletonGrid count={8} className="store-grid" variant="store" /> : list.length ? <div className="store-grid">{list.map((entry, index) => <StoreCard key={entry.id} entry={entry} index={index} onOpen={onOpenStore} />)}</div> : <div className="empty-state"><span className="empty-icon"><Icon name="store" size={25} /></span><h3>Nenhuma loja encontrada</h3><p>Tente outro nome, outra categoria ou outra localização.</p><button className="button button-dark" onClick={() => { setTerm(''); setGroup('Todas'); setFloor('Todos'); setOnlyShowcase(false); }}>Limpar filtros</button></div>}
     <p className="source-note center">Fonte: <a href="https://www.capimdouradosc.com.br/lojas/" target="_blank" rel="noopener noreferrer">diretório oficial do Capim Dourado Shopping</a> (consulta em 13/11/2026). A relação de lojas pode mudar.</p>
@@ -662,10 +697,18 @@ function CartPage({ cart, products, navigate, onRemove, onChangeQuantity, user, 
   const [deliveryMode, setDeliveryMode] = useState(cartLines[0]?.deliveryMode || 'delivery');
   const [paymentMethod, setPaymentMethod] = useState('pix');
   const [processing, setProcessing] = useState(false);
+  const [coupon, setCoupon] = useState('');
+  const [couponOk, setCouponOk] = useState(false);
+  const [couponMsg, setCouponMsg] = useState('');
   const subtotal = cartLines.reduce((sum, line) => sum + line.product.price * line.quantity, 0);
   const delivery = cartLines.length && deliveryMode === 'delivery' ? 12.9 : 0;
-  const confirm = () => { if (!user) { onCheckout({ paymentMethod, deliveryMode }); return; } setProcessing(true); window.setTimeout(() => { setProcessing(false); onCheckout({ paymentMethod, deliveryMode }); }, 1100); };
-  return <main className="page-main"><div className="container narrow-container"><div className="breadcrumb"><button onClick={() => navigate('/')}>Início</button><Icon name="chevron" size={14} /><span>Seu carrinho</span></div><div className="page-title-row cart-title"><div><span className="eyebrow">Quase lá</span><h1>Seu carrinho</h1><p>{cartLines.length ? `${cartLines.reduce((sum, line) => sum + line.quantity, 0)} itens selecionados para você.` : 'Seu carrinho está vazio.'}</p></div>{user && <span className="signed-user"><Icon name="user" size={15} /> {user.name}</span>}</div>{cartLines.length ? <div className="cart-layout"><section className="cart-items"><div className="cart-card"><div className="cart-card-head"><span>Produtos selecionados</span><span>Preço</span></div>{cartLines.map(({ product, quantity }) => <div className="cart-line" key={product.id}><span className="cart-thumb"><ProductVisual product={product} showNote={false} /></span><div className="cart-line-copy"><span className="product-store-line">{getStore(product.storeId).name}</span><h3>{product.name}</h3><small><Icon name="truck" size={13} /> {product.delivery}</small><button onClick={() => onRemove(product.id)}>Remover</button></div><div className="cart-line-price"><strong key={quantity} className="price-flash">{formatCurrency(product.price * quantity)}</strong><div className="quantity-control"><button onClick={() => onChangeQuantity(product.id, quantity - 1)} aria-label="Diminuir"><Icon name="minus" size={14} /></button><span>{quantity}</span><button onClick={() => onChangeQuantity(product.id, quantity + 1)} aria-label="Aumentar"><Icon name="plus" size={14} /></button></div></div></div>)}</div><div className="cart-benefit"><span className="benefit-icon"><Icon name="shield" size={18} /></span><span><strong>Você compra de uma loja do shopping.</strong><small>Pagamento seguro e suporte ShoppingLink do início ao fim.</small></span></div></section><aside className="summary-card"><span className="eyebrow">Resumo do pedido</span><h2>Confira tudo antes de confirmar.</h2><div className="summary-row"><span>Subtotal</span><strong key={subtotal} className="price-flash">{formatCurrency(subtotal)}</strong></div><div className="summary-row"><span>Entrega estimada</span><strong>{delivery ? formatCurrency(delivery) : 'Grátis'}</strong></div><div className="summary-separator" /><div className="summary-row total"><span>Total</span><strong key={subtotal + delivery} className="price-flash">{formatCurrency(subtotal + delivery)}</strong></div><div className="payment-choices"><span className="payment-label">Forma de recebimento</span><button type="button" className={`payment-choice ${deliveryMode === 'pickup' ? 'selected' : ''}`} onClick={() => setDeliveryMode('pickup')}><span><Icon name="map" size={18} /> Retirar no shopping</span><small>grátis · até 1 hora</small>{deliveryMode === 'pickup' && <Icon name="check" size={16} />}</button><button type="button" className={`payment-choice ${deliveryMode === 'delivery' ? 'selected' : ''}`} onClick={() => setDeliveryMode('delivery')}><span><Icon name="truck" size={18} /> Receber em casa</span><small>R$ 12,90 · hoje</small>{deliveryMode === 'delivery' && <Icon name="check" size={16} />}</button></div><div className="payment-choices"><span className="payment-label">Forma de pagamento</span><button type="button" className={`payment-choice ${paymentMethod === 'pix' ? 'selected' : ''}`} onClick={() => setPaymentMethod('pix')}><span><Icon name="pix" size={18} /> Pix</span><small>aprovação imediata</small>{paymentMethod === 'pix' && <Icon name="check" size={16} />}</button><button type="button" className={`payment-choice ${paymentMethod === 'card' ? 'selected' : ''}`} onClick={() => setPaymentMethod('card')}><span><Icon name="card" size={18} /> Cartão</span><small>crédito ou débito</small>{paymentMethod === 'card' && <Icon name="check" size={16} />}</button></div><button className={`button button-coral button-large ${processing ? 'is-loading' : ''}`} onClick={confirm} disabled={processing}>{processing ? <><span className="spinner" /> Confirmando pedido…</> : <>{user ? 'Confirmar pedido' : 'Entrar e confirmar pedido'} <Icon name="arrow" size={17} /></>}</button><small className="summary-footnote"><Icon name="lock" size={13} /> Seus dados ficam protegidos.</small></aside></div> : <div className="empty-state cart-empty"><span className="empty-icon"><Icon name="bag" size={26} /></span><h3>Seu carrinho está esperando boas escolhas.</h3><p>Explore as lojas do shopping e adicione algo que combine com você.</p><button className="button button-dark" onClick={() => navigate('/busca')}>Explorar produtos <Icon name="arrow" size={16} /></button></div>}</div></main>;
+  const discount = couponOk ? subtotal * 0.13 : 0;
+  const applyCoupon = () => {
+    if (coupon.trim().toUpperCase() === 'AZAR13') { setCouponOk(true); setCouponMsg('🐈‍⬛ Cupom AZAR13 aplicado: 13% de desconto!'); }
+    else { setCouponOk(false); setCouponMsg('Cupom inválido. Dizem que um gato preto sabe o código…'); }
+  };
+  const confirm = () => { if (!user) { onCheckout({ paymentMethod, deliveryMode, discount }); return; } setProcessing(true); window.setTimeout(() => { setProcessing(false); onCheckout({ paymentMethod, deliveryMode, discount }); }, 1100); };
+  return <main className="page-main"><div className="container narrow-container"><div className="breadcrumb"><button onClick={() => navigate('/')}>Início</button><Icon name="chevron" size={14} /><span>Seu carrinho</span></div><div className="page-title-row cart-title"><div><span className="eyebrow">Quase lá</span><h1>Seu carrinho</h1><p>{cartLines.length ? `${cartLines.reduce((sum, line) => sum + line.quantity, 0)} itens selecionados para você.` : 'Seu carrinho está vazio.'}</p></div>{user && <span className="signed-user"><Icon name="user" size={15} /> {user.name}</span>}</div>{cartLines.length ? <div className="cart-layout"><section className="cart-items"><div className="cart-card"><div className="cart-card-head"><span>Produtos selecionados</span><span>Preço</span></div>{cartLines.map(({ product, quantity }) => <div className="cart-line" key={product.id}><span className="cart-thumb"><ProductVisual product={product} showNote={false} /></span><div className="cart-line-copy"><span className="product-store-line">{getStore(product.storeId).name}</span><h3>{product.name}</h3><small><Icon name="truck" size={13} /> {product.delivery}</small><button onClick={() => onRemove(product.id)}>Remover</button></div><div className="cart-line-price"><strong key={quantity} className="price-flash">{formatCurrency(product.price * quantity)}</strong><div className="quantity-control"><button onClick={() => onChangeQuantity(product.id, quantity - 1)} aria-label="Diminuir"><Icon name="minus" size={14} /></button><span>{quantity}</span><button onClick={() => onChangeQuantity(product.id, quantity + 1)} aria-label="Aumentar"><Icon name="plus" size={14} /></button></div></div></div>)}</div><div className="cart-benefit"><span className="benefit-icon"><Icon name="shield" size={18} /></span><span><strong>Você compra de uma loja do shopping.</strong><small>Pagamento seguro e suporte ShoppingLink do início ao fim.</small></span></div></section><aside className="summary-card"><span className="eyebrow">Resumo do pedido</span><h2>Confira tudo antes de confirmar.</h2><div className="summary-row"><span>Subtotal</span><strong key={subtotal} className="price-flash">{formatCurrency(subtotal)}</strong></div><div className="summary-row"><span>Entrega estimada</span><strong>{delivery ? formatCurrency(delivery) : 'Grátis'}</strong></div><div className="coupon-box"><input value={coupon} onChange={(event) => setCoupon(event.target.value)} placeholder="Cupom de desconto" aria-label="Cupom de desconto" /><button type="button" onClick={applyCoupon}>Aplicar</button></div>{couponMsg && <small className={`coupon-msg ${couponOk ? 'ok' : ''}`}>{couponMsg}</small>}{couponOk && <div className="summary-row"><span>Cupom AZAR13 (−13%)</span><strong>− {formatCurrency(discount)}</strong></div>}<div className="summary-separator" /><div className="summary-row total"><span>Total</span><strong key={subtotal + delivery - discount} className="price-flash">{formatCurrency(subtotal + delivery - discount)}</strong></div><div className="payment-choices"><span className="payment-label">Forma de recebimento</span><button type="button" className={`payment-choice ${deliveryMode === 'pickup' ? 'selected' : ''}`} onClick={() => setDeliveryMode('pickup')}><span><Icon name="map" size={18} /> Retirar no shopping</span><small>grátis · até 1 hora</small>{deliveryMode === 'pickup' && <Icon name="check" size={16} />}</button><button type="button" className={`payment-choice ${deliveryMode === 'delivery' ? 'selected' : ''}`} onClick={() => setDeliveryMode('delivery')}><span><Icon name="truck" size={18} /> Receber em casa</span><small>R$ 12,90 · hoje</small>{deliveryMode === 'delivery' && <Icon name="check" size={16} />}</button></div><div className="payment-choices"><span className="payment-label">Forma de pagamento</span><button type="button" className={`payment-choice ${paymentMethod === 'pix' ? 'selected' : ''}`} onClick={() => setPaymentMethod('pix')}><span><Icon name="pix" size={18} /> Pix</span><small>aprovação imediata</small>{paymentMethod === 'pix' && <Icon name="check" size={16} />}</button><button type="button" className={`payment-choice ${paymentMethod === 'card' ? 'selected' : ''}`} onClick={() => setPaymentMethod('card')}><span><Icon name="card" size={18} /> Cartão</span><small>crédito ou débito</small>{paymentMethod === 'card' && <Icon name="check" size={16} />}</button></div><button className={`button button-coral button-large ${processing ? 'is-loading' : ''}`} onClick={confirm} disabled={processing}>{processing ? <><span className="spinner" /> Confirmando pedido…</> : <>{user ? 'Confirmar pedido' : 'Entrar e confirmar pedido'} <Icon name="arrow" size={17} /></>}</button><small className="summary-footnote"><Icon name="lock" size={13} /> Seus dados ficam protegidos.</small></aside></div> : <div className="empty-state cart-empty"><span className="empty-icon"><Icon name="bag" size={26} /></span><h3>Seu carrinho está esperando boas escolhas.</h3><p>Explore as lojas do shopping e adicione algo que combine com você.</p><button className="button button-dark" onClick={() => navigate('/busca')}>Explorar produtos <Icon name="arrow" size={16} /></button></div>}</div></main>;
 }
 
 function OrdersPage({ orders, navigate }) {
@@ -828,7 +871,13 @@ export default function ShoppingLinkApp() {
     if (Array.isArray(savedFavorites)) setFavorites(savedFavorites);
     if (Array.isArray(savedRecent)) setRecent(savedRecent);
     setHydrated(true);
-    const onPopState = () => setPath(`${window.location.pathname}${window.location.search}`);
+    const onPopState = () => {
+  const pathname =
+    window.location.pathname.replace(BASE_PATH, '') || '/';
+
+  setPath(`${pathname}${window.location.search}`);
+};
+
     window.addEventListener('popstate', onPopState);
     return () => window.removeEventListener('popstate', onPopState);
   }, []);
@@ -856,7 +905,21 @@ export default function ShoppingLinkApp() {
   }, []);
 
   const notify = useCallback((message, type = 'success', action) => setToast({ message, type, action, id: Date.now() }), []);
-  const navigate = useCallback((to) => { setPath(to); window.history.pushState({}, '', to); window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? 'auto' : 'smooth' }); }, []);
+  const onCat = () => notify('🐈‍⬛ Você achou o gato preto! Use o cupom AZAR13 no carrinho: 13% de desconto.', 'success');
+  const navigate = useCallback((next) => {
+  const destination =
+    next === '/'
+      ? `${BASE_PATH}/`
+      : `${BASE_PATH}${next}`;
+
+  window.history.pushState({}, '', destination);
+  setPath(next);
+  window.scrollTo({
+    top: 0,
+    behavior: prefersReducedMotion() ? 'auto' : 'smooth'
+  });
+}, []);
+
   const onSearch = useCallback((term) => {
     const clean = term?.trim();
     if (clean) setRecent((current) => [clean, ...current.filter((item) => norm(item) !== norm(clean))].slice(0, 5));
@@ -874,7 +937,7 @@ export default function ShoppingLinkApp() {
     if (line && product) notify(`${product.name} removido.`, 'info', { label: 'Desfazer', run: () => { setCart((current) => [...current, line]); setToast(null); } });
   };
   const onChangeQuantity = (productId, quantity) => { if (quantity <= 0) return onRemove(productId); setCart((current) => current.map((line) => line.productId === productId ? { ...line, quantity } : line)); return undefined; };
-  const finishOrder = ({ paymentMethod = 'pix', deliveryMode = 'delivery' } = {}) => { const first = cart[0]; const product = products.find((item) => item.id === first?.productId) || products[0]; const subtotal = cart.reduce((sum, line) => { const item = products.find((itemProduct) => itemProduct.id === line.productId); return sum + (item?.price || 0) * line.quantity; }, 0); const deliveryFee = deliveryMode === 'delivery' ? 12.9 : 0; const newOrder = { id: `SL-${Math.floor(2050 + Math.random() * 400)}`, date: 'Agora mesmo', store: getStore(product.storeId).name, item: cart.length > 1 ? `${product.name} e mais ${cart.length - 1}` : product.name, total: subtotal + deliveryFee, method: paymentMethod === 'card' ? 'Cartão' : 'Pix', mode: deliveryMode === 'pickup' ? 'Retirada no shopping' : 'Entrega em casa', step: 0, address: deliveryMode === 'pickup' ? 'Capim Dourado Shopping · Palmas/TO' : 'Av. Central, 840 · Apto 42' }; setOrders((current) => [newOrder, ...current]); setCart([]); setModal(null); notify('Pedido confirmado. Acompanhe tudo por aqui.'); navigate('/pedidos'); };
+  const finishOrder = ({ paymentMethod = 'pix', deliveryMode = 'delivery', discount = 0 } = {}) => { const first = cart[0]; const product = products.find((item) => item.id === first?.productId) || products[0]; const subtotal = cart.reduce((sum, line) => { const item = products.find((itemProduct) => itemProduct.id === line.productId); return sum + (item?.price || 0) * line.quantity; }, 0); const deliveryFee = deliveryMode === 'delivery' ? 12.9 : 0; const newOrder = { id: `SL-${Math.floor(2050 + Math.random() * 400)}`, date: 'Agora mesmo', store: getStore(product.storeId).name, item: cart.length > 1 ? `${product.name} e mais ${cart.length - 1}` : product.name, total: subtotal + deliveryFee - discount, method: paymentMethod === 'card' ? 'Cartão' : 'Pix', mode: deliveryMode === 'pickup' ? 'Retirada no shopping' : 'Entrega em casa', step: 0, address: deliveryMode === 'pickup' ? 'Capim Dourado Shopping · Palmas/TO' : 'Av. Central, 840 · Apto 42' }; setOrders((current) => [newOrder, ...current]); setCart([]); setModal(null); notify('Pedido confirmado. Acompanhe tudo por aqui.'); navigate('/pedidos'); };
   const onCheckout = (options) => { if (!user) { setModal({ type: 'login' }); notify('Entre para confirmar seu pedido com segurança.', 'info'); return; } finishOrder(options); };
   const onLogin = (name) => { setUser({ name, email: 'cliente@shoppinglink.demo' }); setModal(null); notify('Login realizado. Agora você pode continuar.'); };
   const onCreateProduct = (product) => { setProducts((current) => [{ ...product, id: `custom-${Date.now()}`, kind: undefined }, ...current]); notify('Produto publicado na vitrine da ACIUM.'); };
@@ -917,7 +980,7 @@ export default function ShoppingLinkApp() {
   return <div className="app-shell">
     {!isPanel && <Header path={path} searchProps={searchProps} navigate={navigate} cartCount={cartCount} favoritesCount={favorites.length} user={user} onLogin={() => setModal({ type: 'login' })} />}
     <div className="page-transition" key={pathname}>{content}</div>
-    {!isPanel && <Footer navigate={navigate} onCredits={() => setModal({ type: 'credits' })} />}
+    {!isPanel && <Footer navigate={navigate} onCat={onCat} onCredits={() => setModal({ type: 'credits' })} />}
     {!isPanel && <ScrollChrome />}
     {modal?.type === 'login' && <LoginModal onClose={closeModal} onLogin={onLogin} />}
     {quickProduct && <QuickViewModal product={quickProduct} onClose={closeModal} onAdd={onAdd} navigate={navigate} cardProps={pageCardProps} />}
