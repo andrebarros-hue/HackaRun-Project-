@@ -5,23 +5,6 @@
 
 Projeto acadêmico final: marketplace intermediador entre clientes, lojas e o Capim Dourado Shopping, em Palmas–TO.
 
-## Rodar no VS Code
-
-Abra esta pasta no VS Code e execute no terminal:
-
-```bash
-npm install
-npm run dev
-```
-
-Depois acesse http://localhost:3000.
-
-## Build de produção
-
-```bash
-npm run build
-```
-
 ## Rotas principais
 
 - `/` — início
