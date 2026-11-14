@@ -1,7 +1,20 @@
 # ShoppingLink
 ## Acessar o site
 
- **https://andrebarros-hue.github.io/HackaRun-Project-/**
+## 🚀 Como rodar o projeto localmente
+
+Siga os passos abaixo para executar a aplicação em sua máquina:
+
+### Pré-requisitos
+Certifique-se de ter instalado em seu computador:
+* [Node.js](https://nodejs.org/) (versão 18 ou superior)
+* [Git](https://git-scm.com/)
+
+### Passo a passo
+
+1. **Clone o repositório:**
+   ```bash
+   git clone [https://github.com/andrebarros-hue/HackaRun-Project-.git](https://github.com/andrebarros-hue/HackaRun-Project-.git)
 
 Projeto acadêmico final: marketplace intermediador entre clientes, lojas e o Capim Dourado Shopping, em Palmas–TO.
 
