@@ -9,6 +9,7 @@ Siga os passos abaixo para executar a aplicação em sua máquina:
 Certifique-se de ter instalado em seu computador:
 * [Node.js](https://nodejs.org/) (versão 18 ou superior)
 * [Git](https://git-scm.com/)
+* http://localhost:3000
 
 ### Passo a passo
 
