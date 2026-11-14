@@ -1,4 +1,7 @@
 # ShoppingLink
+## Acessar o site
+
+ **https://andrebarros-hue.github.io/HackaRun-Project-/**
 
 Projeto acadêmico final: marketplace intermediador entre clientes, lojas e o Capim Dourado Shopping, em Palmas–TO.
 
@@ -17,7 +20,6 @@ Depois acesse http://localhost:3000.
 
 ```bash
 npm run build
-npm start
 ```
 
 ## Rotas principais
